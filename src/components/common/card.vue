@@ -28,13 +28,16 @@ export default {
   mounted(){
     global.islogin = true;
   },
+  computed:{
+  },
+  methods:{
+  },
   created(){
-    if(this.dataClass == 0){
+    if(this.dataClass == '全部'){
       axios.get('/api/movie/getMovieByState',{
       params:{state:this.state}
       }).then(function (response) {
         this.data = response.data;
-        console.log(this.data );
       }.bind(this))
       .catch(function (error) {
         console.log(error);
@@ -61,6 +64,7 @@ export default {
   float: left;
   margin-right: 10px;
   margin-bottom: 10px;
+  background: #fff;
   .subImg{
     width:34%;
     height: 100%;

@@ -1,25 +1,31 @@
 <template>
   <div class="wrap">
-      <el-row>
-        <el-col :span="14" class="header" :offset="5">
+      <el-row class="con">
+        <el-col class="header">
           <!-- logo -->
-          <el-col :span="7">
+          <el-col :span="4">
             <div class="logo"><router-link to="/"><img src="https://ws1.sinaimg.cn/large/005N37m4gy1fpgqzelyalj305i01i3yd.jpg" alt="logo"></router-link></div>
           </el-col>
           <!-- 导航条 -->
-          <el-col :span="10">
-            <el-menu mode="horizontal" :default-active="activeIndex" text-color="#888" active-text-color="#5AB7AF">
-              <el-menu-item index="1">首页</el-menu-item>
+          <el-col :span="12">
+            <el-menu mode="horizontal" 
+            text-color="#888" 
+            active-text-color="#5AB7AF" 
+            class="menu" 
+            router
+            :default-active="$route.path"
+            >
+              <el-menu-item index="/">首页</el-menu-item>
               <el-menu-item index="2">我的清单</el-menu-item>
-              <el-menu-item index="3">分类</el-menu-item>
+              <el-menu-item index="/category" route="/category">分类</el-menu-item>
             </el-menu>
           </el-col>
           <!-- 搜索 -->
-          <el-col :span="4">
+          <el-col :span="6">
             <el-input suffix-icon="el-icon-search" placeholder="搜索"></el-input>
           </el-col>
           <!-- 登录框 -->
-          <el-col :span="3">
+          <el-col :span="1">
             <el-button type="primary" @click="handle">登录</el-button>
           </el-col>
         </el-col>
@@ -36,7 +42,6 @@ export default {
     },
     data() {
       return {
-        activeIndex: '1',
         show: ''
       };
     },
@@ -46,7 +51,7 @@ export default {
       ]),
     },
     methods:{
-      ...mapActions(['handle'])
+      ...mapActions(['handle']),
     }
 }
 </script>
@@ -59,10 +64,18 @@ export default {
   background: #fff;
   z-index: 999;
   height: 56px;
-  margin: 0 auto;
   width: 100%;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   overflow: hidden;
+  margin: 0 auto;
+}
+.con{
+  width: 1000px;
+  margin: 0 auto;
+}
+.menu{
+  position: relative;
+  left: 11.3px;
 }
 .header{
   height: 100%;
@@ -74,6 +87,9 @@ export default {
     img{
       height: 100%;
       width: 100%;
+      position: relative;
+      top: 4px;
+      left: -6px;
     }
   }
   .el-row{
@@ -92,7 +108,7 @@ export default {
     // line-height: 56px;
     position: relative;
     top: 8px;
-    left: 10px;
+    left: 14px;
   }
 }
 </style>

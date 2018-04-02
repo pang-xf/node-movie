@@ -1,7 +1,9 @@
 <template>
   <div>
     <Header></Header>
-    <Banner></Banner>
+    <div class="banner">
+      <Banner></Banner>      
+    </div>
     <UserChoose></UserChoose>
     <List title="新剧推荐" state="0"></List>
     <List title="完结剧集" state="1"></List>
@@ -10,14 +12,15 @@
         推荐剧集
       </el-col>
     </el-row>
+    <Footer/>
   </div>
 </template>
 <script>
-import axios from 'axios'
 import Header from '@/components/common/header.vue';
 import Banner from '@/components/common/banner.vue';
 import UserChoose from '@/components/common/userChoose.vue';
 import List from '@/components/common/list.vue';
+import Footer from '@/components/common/footer.vue';
 export default {
   data(){
     return{
@@ -28,17 +31,9 @@ export default {
     Header,
     Banner,
     UserChoose,
-    List
+    List,
+    Footer
   },
-  created(){
-    axios.get('/api/movie/getMovieAll')
-      .then(function (response) {
-        this.mdata = response.data[0].name;
-    }.bind(this))
-    .catch(function (error) {
-      console.log(error);
-    });
-  }
 }
 </script>
 
@@ -46,6 +41,15 @@ export default {
 *{
   margin: 0;
   padding: 0;
+}
+body{
+  background: #f4f4f4;
+}
+li{
+  list-style: none;
+}
+a{
+  text-decoration: none;
 }
 .el-card__header{
   padding: 10px 20px;
@@ -56,6 +60,9 @@ export default {
   border-radius: 3px;
   padding: 8px 16px;
   margin-bottom: 20px;
+}
+.banner{
+  margin: 0 auto;
 }
 </style>
 

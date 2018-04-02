@@ -7,16 +7,16 @@
              <span class="title">{{title}}</span>
             <el-tabs v-model="activeName">
               <el-tab-pane label="全部" name="1">
-                <Card :state=this.state dataClass = "0"></Card>
+                <Card :state=this.state dataClass = "全部"></Card>
               </el-tab-pane>
               <el-tab-pane label="美剧" name="2">
-                <Card :state=this.state dataClass = "6"></Card>
+                <Card :state=this.state dataClass = "美国"></Card>
               </el-tab-pane>
               <el-tab-pane label="韩剧" name="3">
-                <Card :state=this.state dataClass = "4"></Card>
+                <Card :state=this.state dataClass = "韩国"></Card>
               </el-tab-pane>
               <el-tab-pane label="日剧" name="4">
-                <Card :state=this.state dataClass = "5"></Card>
+                <Card :state=this.state dataClass = "日本"></Card>
               </el-tab-pane>
               <el-tab-pane label="动漫" name="5">动漫</el-tab-pane>
             </el-tabs>
@@ -29,7 +29,6 @@
 <script>
 import Login from '@/components/common/login.vue'
 import Card from '@/components/common/card.vue'
-// import {mapState,mapActions} from 'vuex';
 export default {
   components:{
     Card

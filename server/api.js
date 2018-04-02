@@ -53,5 +53,34 @@ module.exports = {
         connection.release();
       })
     })
+  },
+  // 按电影的ID获取影片详情
+  getMovieById(req,res,next){
+    let id = req.query.id;
+    pool.getConnection((err,connection)=>{
+      connection.query(sqlMap.movie.queryById,[id],(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 新剧推荐  按时间排序
+  getMovieByTime(req,res,next){
+    pool.getConnection((err,connection)=>{
+      connection.query(sqlMap.movie.queryByTime,(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 按 Mid获取播放列表
+  getPlayListByMid(req,res,next){
+    let mid = req.query.mid;
+    pool.getConnection((err,connection)=>{
+      connection.query(sqlMap.playList.queryPlayListByMid,{mid},(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
   }
 }

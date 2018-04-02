@@ -14,4 +14,16 @@ router.get('/api/movie/getMovieByState', function(req, res, next) {
 router.get('/api/movie/getMovieByStateCountry', function(req, res, next) {
   return api.getMovieByStateCountry(req, res, next);
 })
+// 按ID获取电影详情
+router.get('/api/movie/getMovieById', function(req, res, next) {
+  return api.getMovieById(req, res, next);
+})
+// 新剧推荐  按时间排序
+router.get('/api/movie/getMovieByTime', function(req, res, next) {
+  return api.getMovieByTime(req, res, next);
+})
+// 播放列表
+router.get('/api/playList/getPlayListByMid', function(req, res, next) {
+  return api.getPlayListByMid(req, res, next);
+})
 module.exports = router;

@@ -6,8 +6,13 @@ var sqlMap = {
     delete: 'delete from blog where id=?',
     queryByStateCountry: 'SELECT * FROM MOVIE WHERE STATE=? AND COUNTRY=?',
     queryByState: 'SELECT * FROM MOVIE WHERE STATE=?',
-    queryAll: 'SELECT * FROM MOVIE'
+    queryAll: 'SELECT * FROM MOVIE',
+    queryById:'SELECT * FROM MOVIE WHERE ID=?',
+    queryByTime:'SELECT name,`update`,`time`,`img`,`dingyue` FROM MOVIE order by time desc limit 3', 
   },
+  playList:{
+    queryPlayListByMid:'SELECT * FROM playList where mid=?'     
+  }
 }
 
 module.exports = sqlMap;

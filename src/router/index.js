@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import index from '@/components/index'
 import detail from '@/components/page/detail'
 import notFound from '@/components/page/notFound'
+import category from '@/components/page/category'
 
 Vue.use(Router)
 
@@ -11,12 +12,20 @@ const router =  new Router({
     {
       path: '/',
       name: 'index',
-      component: index
+      component: index,
+      meta:{
+        keepAlive:true
+      }
     },
     {
-      path:'/detail',
+      path:'/detail/:id',
       name:'detail',
       component: detail
+    },
+    {
+      path:'/category',
+      name:'category',
+      component:category
     }
   ]
 })

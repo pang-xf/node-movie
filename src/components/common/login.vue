@@ -1,10 +1,11 @@
 <template>
-  <div class="modal">
+  <div class="modal" >
   <!-- 模态框 -->
     <el-dialog
       title="登录"
       :visible.sync="$store.state.dialog.dialogVisible"
       width="40%"
+      :modal = false
       >
       <div class="content">
         <div class="left"></div>
@@ -38,6 +39,7 @@ export default {
     transform: translateY(-50%);
     background: none;
     width: 700px !important;
+    border-radius: 10px !important;
     .el-dialog__header{
       display: none;
     }
@@ -53,19 +55,23 @@ export default {
     width: 100%;
     height: 430px;
     box-shadow: 0 1px 30px #333;
-    // border-radius: 10px !important;
+    border-radius: 10px !important;
     .left{
       width: 50%;
       height: 100%;
       float: left;
       background: url(http://neets.cc/assets/img/load.png);
       background-size: cover;
+      border-top-left-radius: 10px !important;
+      border-bottom-left-radius: 10px !important;
     }
     .right{
       width: 50%;
       height: 100%;
       float: left;
       background: #647084;
+      border-top-right-radius: 10px !important;
+      border-bottom-right-radius: 10px !important;
     }
   }
 }
