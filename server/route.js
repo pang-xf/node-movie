@@ -26,4 +26,16 @@ router.get('/api/movie/getMovieByTime', function(req, res, next) {
 router.get('/api/playList/getPlayListByMid', function(req, res, next) {
   return api.getPlayListByMid(req, res, next);
 })
+// 查询用户名和密码
+router.get('/api/user/queryLogin', function(req, res, next) {
+  return api.queryLogin(req, res, next);
+})
+// 注册
+router.post('/api/user/register',function(req, res, next){
+  return api.register(req, res, next);
+})
+// 分页查询 全部
+router.get('/api/getMovieBypage', function(req, res, next) {
+  return api.getMovieBypage(req, res, next);
+})
 module.exports = router;

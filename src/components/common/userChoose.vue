@@ -7,9 +7,12 @@
             <span>我的订阅</span>
             <el-button style="float: right; padding: 3px 0" type="text" icon="el-icon-arrow-right">查看全部</el-button>
           </div>
-          <div  class="content">
+          <div  class="content"  v-if="!this.$store.state.login.currentUser.getUserToken()">
             <p>当你订阅的剧集更新时，你会在此看到它。</p>
             <el-button type="primary" @click="handle">登录</el-button>
+          </div>
+          <div v-else class="content">
+            <p>暂无订阅</p>
           </div>
         </el-card>
       </el-col>  

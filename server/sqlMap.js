@@ -9,9 +9,15 @@ var sqlMap = {
     queryAll: 'SELECT * FROM MOVIE',
     queryById:'SELECT * FROM MOVIE WHERE ID=?',
     queryByTime:'SELECT name,`update`,`time`,`img`,`dingyue` FROM MOVIE order by time desc limit 3', 
+    queryAllByLimit:'SELECT * FROM MOVIE '  //分页查询 查18条
   },
   playList:{
     queryPlayListByMid:'SELECT * FROM playList where mid=?'     
+  },
+  user:{
+    queryUser: 'SELECT COUNT(1) as result FROM USER where USER=? AND PWD=?',
+    queryUserOnly: 'SELECT COUNT(1) as result FROM USER where USER=?',
+    queryUserAvtar: 'SELECT AVTAR FROM USER WHERE USER=?',
   }
 }
 

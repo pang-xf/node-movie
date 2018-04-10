@@ -1,16 +1,24 @@
 <template>
 <div class="wrap">
   <Header/>
-  <NavMenu/>
+  <NavMenu @changeMenu = changeMenu> </NavMenu>
   <!-- 最新 最热 -->
-  <div class="navBtn">
+  <!-- <div class="navBtn">
     <div class="wrap">
       <div class="btn" @click="handlerNavBtn(0)" :class="{active: 0 == active}">最热</div>
       <div class="btn" @click="handlerNavBtn(1)" :class="{active: 1 == active}">最新</div>
     </div>
-  </div>
+  </div> -->
   <div class="cardWrap">
-    <Card :state=1 dataClass = "全部"></Card>
+    <Card 
+     :state = state 
+     :data = data 
+     @curPaging = curPaging
+     :total = total
+     :pageSize = pageSize
+     >
+    </Card>
+    <div class="clear"></div>
   </div>
 </div>
 </template>
@@ -18,29 +26,92 @@
 import Header from '@/components/common/header.vue';
 import Footer from '@/components/common/footer.vue';
 import NavMenu from '@/components/common/navMenu.vue';
-import Card from '@/components/common/card.vue'
+import Card from '@/components/common/cardCate.vue'
+import axios from 'axios'
 export default {
   components:{
     Header,
     Footer,
     NavMenu,
-    Card
+    Card,
   },
   data(){
     return{
-      active:0
+      active:0,
+      data:'',
+      curPage:1,
+      total:null,
+      pageSize:18,
+      state: [],
     }
   },
   methods:{
+    changeMenu(i){
+      switch(i)
+      {
+        case 0:
+          this.getDataByState(0)
+          break;
+        case 1 :
+          this.getDataByState(1)
+          break;
+      }
+    },
+    curPaging(i){
+      this.curPage = i
+      this.getData()
+    },
     handlerNavBtn(i){
       this.active = i
+    },
+    getData(){
+      axios.get('/api/getMovieBypage',{
+        params:{curPage:this.curPage,pageSize:this.pageSize}
+        }).then(function (response) {
+          if(response.data.code == 1 ){
+            this.data = response.data.data;
+            // console.log(this.data);
+            this.total = response.data.length
+            for(let i = 0;i<18;i++){
+              this.state.push(this.data[i].state)
+            }
+            // console.log(this.state);
+          }else{
+            console.log('请求失败');
+          }
+        }.bind(this))
+        .catch(function (error) {
+          console.log(error);
+      });
+    },
+    getDataByState(state){
+      this.state.length = 0;
+      axios.get('/api/movie/getMovieByState',{
+      params:{state:state}
+      }).then(function (response) {
+        this.data = response.data;
+        this.total = response.data.length
+        console.log(this.data);        
+        for(let i = 0;i<18;i++){
+          this.state.push(this.data[i].state)
+        }
+      }.bind(this))
+      .catch(function (error) {
+        console.log(error);
+      });
     }
+  },
+  created(){
+    this.getData()
   }
 }
 </script>
 <style lang="less" scoped>
 body{
   background: #f4f4f4;
+}
+.clear{
+  clear: both;
 }
 .navBtn{
   width: 1000px;
@@ -68,10 +139,10 @@ body{
   }
 }
 .cardWrap{
-  width: 940px;
-  height: 1000px;
+  width: 1000px;
+  min-height: 500px;
   margin: 0 auto;
-  padding: 30px 0 0 30px;
-  border:1px dashed saddlebrown;
+  padding: 30px 0 60px 30px;
+  position: relative;
 }
 </style>

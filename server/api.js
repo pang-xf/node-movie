@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 var mysqlConf = require('./db');
 var sqlMap = require('./sqlMap');
-
+const token = require('./token');
 // 连接数据库
 var pool = mysql.createPool({
   host: mysqlConf.mysql.host,
@@ -31,6 +31,48 @@ module.exports = {
         jsonWrite(res, result);
         connection.release();
       })
+    })
+  },
+  //  分页查询 全部 点击分页器
+  getMovieBypage(req,res,next){
+    let count = req.query.pageSize; //每页的数据量 前端传入
+    let curPage = req.query.curPage;//当前页  前端传入
+    let start = count*(curPage-1); //起始的位置
+    let sql = `SELECT * FROM MOVIE limit ${start},${count}`
+    pool.getConnection((err, connection) => {
+      if(err) throw err;
+      // 先拿到总条数 返回给前端 要做统计总页数      
+      let promise = function(){
+        return new Promise(((resolve,reject)=>{
+          connection.query(sqlMap.movie.queryAll,(err,result) => {
+            if(err){
+              return reject(err);
+            }
+            resolve(result.length);
+          })
+        }))
+      }
+      promise().then(function(val){
+        connection.query(sql, (err, result) => {
+          if(err){
+            res.json({
+              code:'-1',
+              msg:'操作失败',
+            })
+            throw err
+          }else{
+            // 计算总页数
+            res.json({
+              length:val,  //这里是数据库的总条数
+              data:result,
+              code:'1',
+              msg:'操作成功',
+              curPage:curPage
+            })
+          }
+          connection.release();
+        })
+      })      
     })
   },
   // 按更新状态获取电影
@@ -82,5 +124,73 @@ module.exports = {
         connection.release();
       })
     })
-  }
+  },
+  // 用户登录查询
+  queryLogin(req,res,next){
+    let user = req.query.user,pwd = req.query.pwd;
+    pool.getConnection((err,connection)=>{
+      connection.query(sqlMap.user.queryUser,[user,pwd],(err,result) => {
+        if(result[0].result>0){
+          let tokenMsg = token.generateToken(user);
+          let avtar = function(){
+            return new Promise(((resolve,reject)=>{
+              connection.query(sqlMap.user.queryUserAvtar,[user],(err,result) => {
+                if(err) {
+                  return reject(err);
+                }
+                resolve(result[0].AVTAR);
+              })
+            }))
+          }
+          avtar().then(function(val){
+            res.json({
+              code:'1',
+              msg: '操作成功',
+              user: user,
+              token:tokenMsg,
+              avtar: val
+            });
+          })
+          return
+        }else{
+          res.json({
+            code:'-1',
+            msg: '操作失败0'
+          });
+        }
+        connection.release();
+      })
+    })
+  },
+  // 游客注册
+  register(req,res,next){
+    let user = req.body.params.user
+    let userMsg = {
+      user:req.body.params.user,
+      pwd:req.body.params.pwd,
+      avtar:req.body.params.avtar,
+      root:req.body.params.root,
+    }
+    pool.getConnection((err,connection)=>{
+      connection.query(sqlMap.user.queryUserOnly,user,(err,result) => {
+        // 说明已经这个账号被注册过了，返回-1
+        if(result[0].result>0){
+          res.json({
+            code:'-1',
+            msg: '操作失败0'
+          });
+          return
+        }else{
+          connection.query('insert into user set ?',userMsg,(err,result) => {
+            if (err) throw  err;
+            res.json({
+              code: '1',
+              msg:'操作成功'
+            })
+          })
+        }
+        connection.release();
+      })
+    })
+  },
 }

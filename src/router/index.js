@@ -4,9 +4,9 @@ import index from '@/components/index'
 import detail from '@/components/page/detail'
 import notFound from '@/components/page/notFound'
 import category from '@/components/page/category'
-
+import mylist from '@/components/page/mylist'
+import store from '@/store/index'
 Vue.use(Router)
-
 const router =  new Router({
   routes: [
     {
@@ -14,45 +14,61 @@ const router =  new Router({
       name: 'index',
       component: index,
       meta:{
-        keepAlive:true
+        keepAlive:true,
+        title:'私人追剧管家'
       }
     },
     {
       path:'/detail/:id',
       name:'detail',
-      component: detail
+      component: detail,
+      meta:{
+        title:'详情'
+      }
     },
     {
       path:'/category',
       name:'category',
-      component:category
+      component:category,
+      meta:{
+        keepAlive:true,
+        title:'分类'
+      }
+    },
+    {
+      path:'/mylist',
+      name:'mylist',
+      component:mylist,
+      meta:{
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+      }
     }
   ]
 })
+router.beforeEach((to, from, next) => {
+  /* 路由发生变化修改页面title */
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
+  // next()
+  if (to.meta.requireAuth) {  // 判断该路由是否需要登录权限
+    let token = store.state.login.currentUser.getUserToken()
+    console.log(token); //拿到了
+    if (token) { 
+        next();
+    }
+    else {
+      store.dispatch('handle')
+      next({
+          path: '/',
+          // query: {redirect: to.fullPath}  // 将跳转的路由path作为参数，登录成功后跳转到该路由
+      })
+    }
+  }
+  else {
+      next();
+  }
+})
 
-
-// 全局路由守卫
-// router.beforeEach((to,from,next)=>{
-//   console.log('00');
-//   // to: Route: 即将要进入的目标 路由对象
-//   // from: Route: 当前导航正要离开的路由
-//   // next: Function: 一定要调用该方法来 resolve 这个钩子。执行效果依赖 next 方法的调用参数。
-//   const nextRoute = ['home', 'good-list', 'good-detail', 'cart', 'profile'];
-//   let isLogin = global.isLogin;  // 是否登录
-//   // 未登录状态；当路由到nextRoute指定页时，跳转至login
-//   if (nextRoute.indexOf(to.name) >= 0) {  
-//     if (!isLogin) {
-//       console.log('what fuck');
-//       router.push({ name: 'login' })
-//     }
-//   }
-//   // 已登录状态；当路由到login时，跳转至home 
-//   if (to.name === 'login') {
-//     if (isLogin) {
-//       router.push({ name: 'home' });
-//     }
-//   }
-//   next();
-// })
 
 export default router;

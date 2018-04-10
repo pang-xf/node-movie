@@ -3,65 +3,75 @@
     <div class="line">
       <span>状态</span>
       <div class="menu">
-        <router-link to="#">全部</router-link>
-        <router-link to="#">连载</router-link>
-        <router-link to="#">完结</router-link>
-        <router-link to="#">未开播</router-link>
+        <div class="menuLink">全部</div>
+        <div class="menuLink" @click="changeData(0)">连载</div>
+        <div class="menuLink" @click="changeData(1)">完结</div>
       </div>
     </div>
     <div class="line">
       <span>类目</span>
       <div class="menu">
-        <router-link to="#">全部</router-link>
-        <router-link to="#">电视剧</router-link>
-        <router-link to="#">电影</router-link>
-        <router-link to="#">动漫</router-link>
-        <router-link to="#">综艺</router-link>
+        <div class="menuLink">全部</div>
+        <div class="menuLink">电视剧</div>
+        <div class="menuLink">电影</div>
+        <div class="menuLink">动漫</div>
+        <div class="menuLink">综艺</div>
       </div>
     </div>
      <div class="line">
       <span>地区</span>
       <div class="menu">
-        <router-link to="#">全部</router-link>
-        <router-link to="#">大陆</router-link>
-        <router-link to="#">香港</router-link>
-        <router-link to="#">台湾</router-link>
-        <router-link to="#">韩国</router-link>
-        <router-link to="#">日本</router-link>
-        <router-link to="#">美国</router-link>
-        <router-link to="#">英国</router-link>
-        <router-link to="#">泰国</router-link>
+        <div class="menuLink">全部</div>
+        <div class="menuLink">大陆</div>
+        <div class="menuLink">香港</div>
+        <div class="menuLink">台湾</div>
+        <div class="menuLink">韩国</div>
+        <div class="menuLink">日本</div>
+        <div class="menuLink">美国</div>
+        <div class="menuLink">英国</div>
+        <div class="menuLink">泰国</div>
       </div>
     </div>
     <div class="line">
       <span>年代</span>
       <div class="menu">
-        <router-link to="#">全部</router-link>
-        <router-link to="#">2018</router-link>
-        <router-link to="#">2017</router-link>
-        <router-link to="#">2016</router-link>
-        <router-link to="#">2015-2011</router-link>
-        <router-link to="#">90年代</router-link>
-        <router-link to="#">更早</router-link>
+        <div class="menuLink">全部</div>
+        <div class="menuLink">2018</div>
+        <div class="menuLink">2017</div>
+        <div class="menuLink">2016</div>
+        <div class="menuLink">2015-2011</div>
+        <div class="menuLink">90年代</div>
+        <div class="menuLink">更早</div>
       </div>
     </div>
     <div class="line">
       <span>时间表</span>
       <div class="menu">
-        <router-link to="#">全部</router-link>
-        <router-link to="#">周一</router-link>
-        <router-link to="#">周二</router-link>
-        <router-link to="#">周三</router-link>
-        <router-link to="#">周四</router-link>
-        <router-link to="#">周五</router-link>
-        <router-link to="#">周六</router-link>
-        <router-link to="#">周日</router-link>
+        <div class="menuLink">全部</div>
+        <div class="menuLink">周一</div>
+        <div class="menuLink">周二</div>
+        <div class="menuLink">周三</div>
+        <div class="menuLink">周四</div>
+        <div class="menuLink">周五</div>
+        <div class="menuLink">周六</div>
+        <div class="menuLink">周日</div>
       </div>
     </div>
   </div>
 </template>
 <script>
 export default {
+  data(){
+    return{
+      state:null
+    }
+  },
+  methods:{
+    changeData(i){
+      this.state = i;
+      this.$emit('changeMenu',this.state)
+    }
+  },
 }
 </script>
 <style lang="less" scoped>
@@ -91,12 +101,12 @@ export default {
       width: 90%;
       border-bottom: 1px dashed #DEDEDE;
       float: left;
-      a{
-        text-decoration: none;
-        display: inline-block;
+      .menuLink{
         color:#888;
         width: 90px;
         font-size: 14px;
+        float: left;
+        cursor: pointer;
         &:hover{
           color:#FF6160;
         }
