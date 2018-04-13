@@ -31,7 +31,7 @@ const router =  new Router({
       name:'category',
       component:category,
       meta:{
-        keepAlive:true,
+        // keepAlive:true,
         title:'分类'
       }
     },

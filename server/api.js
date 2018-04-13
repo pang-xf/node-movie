@@ -96,6 +96,129 @@ module.exports = {
       })
     })
   },
+  // 按状态和类型查找
+  getMovieByStateAndType(req,res,next){
+    let state = req.query.state;
+    let type = req.query.type;
+    pool.getConnection((err,connection)=>{
+      connection.query(sqlMap.movie.queryByStateAndType,[state,type],(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 按电视剧分类获取电影
+  getMovieByClass(req,res,next){
+    let type = req.query.class;
+    pool.getConnection((err,connection)=>{
+      connection.query(sqlMap.movie.queryByClass,[type],(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 按状态和年份
+  getMovieByStateAndYear(req,res,next){
+    let state = req.query.state;
+    let year = req.query.year;
+    let sql = `SELECT * FROM MOVIE WHERE STATE = ${state} AND time like '%${year}_%_%'`
+    pool.getConnection((err,connection)=>{
+      connection.query(sql,(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 按类目和地区
+  getMovieByTypeAndRegion(req,res,next){
+    const type = req.query.type1;
+    const country = req.query.country;
+    pool.getConnection((err,connection)=>{
+      connection.query(sqlMap.movie.queryByTypeAndCountry,[type,country],(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 按类目和年代
+  getMovieByTypeAndYear(req,res,next){
+    let type = req.query.type;
+    let year = req.query.year;
+    let sql = `SELECT * FROM MOVIE WHERE TYPE = '${type}' AND time like '%${year}_%_%'`
+    pool.getConnection((err,connection)=>{
+      connection.query(sql,(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 按地区和年代
+  getMovieByRegionAndYear(req,res,next){
+    let country = req.query.country;
+    let year = req.query.year;
+    let sql = `SELECT * FROM MOVIE WHERE COUNTRY = '${country}' AND time like '%${year}_%_%'`
+    pool.getConnection((err,connection)=>{
+      connection.query(sql,(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 按状态 类别 地区获取
+  getMovieByStateAndClassAndCountry(req,res,next){
+    let state = req.query.state;
+    let type = req.query.type;
+    let country = req.query.country;
+    pool.getConnection((err,connection)=>{
+      connection.query(sqlMap.movie.queryByStateAndTypeAndCountry,[state,type,country],(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 按状态 地区 年代获取
+  getMovieByStateAndRegionAndYear(req,res,next){
+    let state = req.query.state;
+    let country = req.query.country;
+    let year = req.query.year;
+    let sql = `SELECT * FROM MOVIE WHERE STATE = ${state} AND country = '${country}' AND time like '%${year}_%_%'`
+    pool.getConnection((err,connection)=>{
+      connection.query(sql,(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 按地区获取电影
+  getMovieByRegion(req,res,next){
+    let country = req.query.region;
+    pool.getConnection((err,connection)=>{
+      connection.query(sqlMap.movie.queryByCountry,[country],(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 按资源年份获取
+  getMovieByYear(req,res,next){
+    let year = req.query.year;
+    let sql = `SELECT * FROM MOVIE WHERE time like '%${year}_%_%'`
+    pool.getConnection((err,connection)=>{
+      connection.query(sql,(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  //  按时间更早
+  getMovieByEarly(req,res,next){
+    pool.getConnection((err,connection)=>{
+      connection.query(sqlMap.movie.queryByEarly,(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
   // 按电影的ID获取影片详情
   getMovieById(req,res,next){
     let id = req.query.id;

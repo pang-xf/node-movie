@@ -9,7 +9,12 @@ var sqlMap = {
     queryAll: 'SELECT * FROM MOVIE',
     queryById:'SELECT * FROM MOVIE WHERE ID=?',
     queryByTime:'SELECT name,`update`,`time`,`img`,`dingyue` FROM MOVIE order by time desc limit 3', 
-    queryAllByLimit:'SELECT * FROM MOVIE '  //分页查询 查18条
+    queryByClass:'SELECT * FROM MOVIE WHERE TYPE=?', 
+    queryByCountry:'SELECT * FROM MOVIE WHERE COUNTRY=?', 
+    queryByEarly:'SELECT * FROM MOVIE WHERE time < 2012', 
+    queryByStateAndType:'SELECT * FROM MOVIE WHERE STATE=? AND TYPE=?', 
+    queryByTypeAndCountry:'SELECT * FROM MOVIE WHERE type=? AND country=?', 
+    queryByStateAndTypeAndCountry:'SELECT * FROM MOVIE WHERE state=? AND type=? AND country=?', 
   },
   playList:{
     queryPlayListByMid:'SELECT * FROM playList where mid=?'     

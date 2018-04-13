@@ -1,6 +1,6 @@
 <template>
 <div class="wrap">
-  <div class="card" v-for="(value,index) in data" :key="index">
+  <div class="card" v-for="(value,index) in data" :key="index" v-show="data.length!=0">
     <div class="subImg">
       <router-link :to="{name:'detail',params:{id:data[index].id}}" ><img :src=data[index].img alt="图片"></router-link>
     </div>
@@ -14,7 +14,10 @@
       </div>
     </div>
   </div>
-  <div class="paging" v-show="data">
+  <div class="none" v-show="data.length==0">
+    暂无数据
+  </div>
+  <div class="paging" v-show="data.length>0">
     <pagination 
       :page-index = curPage   
       :total = total    
@@ -39,7 +42,7 @@ export default {
   },
   mounted(){
     global.islogin = true;
-    console.log(this.state);
+    // console.log(this.state);
   },
   methods:{
     pageChange(i){
@@ -54,7 +57,9 @@ export default {
   height: 50px;
   position: absolute;
   bottom: 0;
-  transform: translateX(150%);
+  left: 0;
+  right: 0;
+  // top: 0;
 }
 .card{
   overflow: hidden;
@@ -131,5 +136,16 @@ export default {
       }
     }
   }
+}
+.none{
+  height: 300px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color:#ccc;
+  font-size: 42px;
+  font-weight: bolder;
+  letter-spacing: 10px;
 }
 </style>
