@@ -5,6 +5,7 @@ import detail from '@/components/page/detail'
 import notFound from '@/components/page/notFound'
 import category from '@/components/page/category'
 import mylist from '@/components/page/mylist'
+import myCollect from '@/components/page/myCollect'
 import store from '@/store/index'
 Vue.use(Router)
 const router =  new Router({
@@ -14,7 +15,7 @@ const router =  new Router({
       name: 'index',
       component: index,
       meta:{
-        keepAlive:true,
+        // keepAlive:true,
         title:'私人追剧管家'
       }
     },
@@ -41,6 +42,16 @@ const router =  new Router({
       component:mylist,
       meta:{
         requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+        title:'我的订阅清单'
+      }
+    },
+    {
+      path:'/myCollect',
+      name:'myCollect',
+      component:myCollect,
+      meta:{
+        requireAuth: true,  // 添加该字段，表示进入这个路由是需要登录的
+        title:'我的收藏清单'
       }
     }
   ]
@@ -53,7 +64,7 @@ router.beforeEach((to, from, next) => {
   // next()
   if (to.meta.requireAuth) {  // 判断该路由是否需要登录权限
     let token = store.state.login.currentUser.getUserToken()
-    console.log(token); //拿到了
+    // console.log(token); //拿到了
     if (token) { 
         next();
     }

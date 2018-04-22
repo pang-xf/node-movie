@@ -41,7 +41,6 @@ export default {
     width: 530px;
     height: 500px;
     float: left;
-    margin-top: 18px;
     .wrap{
       padding: 0 10px;
       height: 100%;

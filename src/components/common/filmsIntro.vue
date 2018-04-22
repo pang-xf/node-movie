@@ -16,6 +16,8 @@ export default {
 <style lang="less" scoped>
 .wrap{
   width: 100%;
+  font-size: 16px;
+  margin-bottom: 18px;
 }
 </style>
 

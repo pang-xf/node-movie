@@ -17,38 +17,19 @@
   <div class="none" v-show="data.length==0">
     暂无数据
   </div>
-  <div class="paging" v-show="data.length>0">
-    <pagination 
-      :page-index = curPage   
-      :total = total    
-      :page-size = pageSize  
-      @change ="pageChange"
-    ></pagination>
-  </div>
 </div>
 </template>
 <script>
-import axios from 'axios'
-import pagination from '@/components/common/paging.vue'
 export default {
-  props:['state','data','total','pageSize'],
-  components:{
-    pagination    
-  },
+  props:['state','data'],
   data(){
     return{
-      curPage:1,
     }
   },
   mounted(){
     global.islogin = true;
-    // console.log(this.state);
   },
   methods:{
-    pageChange(i){
-      this.curPage = i
-      this.$emit('curPaging',this.curPage);
-    },
   },
 }
 </script>

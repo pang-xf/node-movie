@@ -1,6 +1,7 @@
 var mysql = require('mysql');
 var mysqlConf = require('./db');
 var sqlMap = require('./sqlMap');
+var utils = require('./utils');
 const token = require('./token');
 // 连接数据库
 var pool = mysql.createPool({
@@ -24,6 +25,15 @@ var jsonWrite = function (res, data) {
 };
 
 module.exports = {
+  // 获取推荐清单
+  getTjqd(req,res,next){
+    pool.getConnection((err, connection) => {
+      connection.query(sqlMap.movie.queryTjqd, (err, result) => {
+        jsonWrite(res, result);
+        connection.release();
+      })
+    })
+  },
   // 获取全部电影
   getMovieAll(req, res, next) {
     pool.getConnection((err, connection) => {
@@ -164,6 +174,20 @@ module.exports = {
       })
     })
   },
+  // 按四个条件
+  getMovieByAllConditions(req,res,next){
+    let country = req.query.country;
+    let year = req.query.year;
+    let state = req.query.state;
+    let type = req.query.type;
+    let sql = `SELECT * FROM MOVIE WHERE STATE = ${state} AND type = '${type}' AND COUNTRY = '${country}' AND time like '%${year}_%_%'`
+    pool.getConnection((err,connection)=>{
+      connection.query(sql,(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
   // 按状态 类别 地区获取
   getMovieByStateAndClassAndCountry(req,res,next){
     let state = req.query.state;
@@ -182,6 +206,33 @@ module.exports = {
     let country = req.query.country;
     let year = req.query.year;
     let sql = `SELECT * FROM MOVIE WHERE STATE = ${state} AND country = '${country}' AND time like '%${year}_%_%'`
+    pool.getConnection((err,connection)=>{
+      connection.query(sql,(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 按状态 类目 年代
+  getMovieByStateAndTypeAndYear(req,res,next){
+    let state = req.query.state;
+    let type = req.query.type;
+    let year = req.query.year;
+    let sql = `SELECT * FROM MOVIE WHERE STATE = ${state} AND type = '${type}' AND time like '%${year}_%_%'`
+    pool.getConnection((err,connection)=>{
+      connection.query(sql,(err,result) => {
+        jsonWrite(res,result);
+        connection.release();
+      })
+    })
+  },
+  // 类目 地区 年代
+  getMovieByTypeAndRegionAndYear(req,res,next){
+    let country = req.query.country;
+    let type = req.query.type;
+    let year = req.query.year;
+    let sql = `SELECT * FROM MOVIE WHERE country = '${country}' AND type = '${type}' AND time like '%${year}_%_%'`
+    console.log(sql);
     pool.getConnection((err,connection)=>{
       connection.query(sql,(err,result) => {
         jsonWrite(res,result);
@@ -261,7 +312,7 @@ module.exports = {
                 if(err) {
                   return reject(err);
                 }
-                resolve(result[0].AVTAR);
+                resolve(result[0]);
               })
             }))
           }
@@ -271,7 +322,8 @@ module.exports = {
               msg: '操作成功',
               user: user,
               token:tokenMsg,
-              avtar: val
+              avtar: val.AVTAR,
+              id:val.id
             });
           })
           return
@@ -316,4 +368,83 @@ module.exports = {
       })
     })
   },
+  // 获取用户订阅的电影列表
+  async getUserSub(req,res,next){
+    let uid = req.query.uid;
+    let mid = await utils.getMidByuid(uid); //mid[0].mid
+    let data = []
+    for(let i = 0;i<mid.length;i++){
+      data[i] = await utils.getMovieBymid(mid[i].mid)
+    }
+    res.json({
+      code:'1',
+      msg:'获取成功',
+      data:data
+    })
+  },
+  // 用户订阅
+  async subscribe(req,res,next){
+    // 告诉后端用户是谁  订阅的电影id是什么
+    let uid = req.query.uid;
+    let mid = req.query.mid;
+    let allMid = await utils.getAllMidByUid(uid)
+    let arrRe = await utils.arrRepeatQuery(allMid,mid)
+    if(arrRe>=0){
+      res.json({
+        code:-1,
+        msg:'订阅失败,你已经订阅过该资源',
+      })
+      return
+    }else{
+      let data = await utils.subscribe(uid,mid)
+      res.json({
+        code:1,
+        msg:'订阅成功',
+        data:data
+      })
+    }
+  },
+  // 取消订阅
+  async cancelSub(req,res,next){
+    let mid = req.query.id;
+    let data = await utils.cancelSub(mid)
+    res.json({
+      code:1,
+      msg:'取消订阅成功',
+      data:data
+    })
+  },
+  // 用户推荐的清单
+  async userCollect(req,res,next){
+    let uid = req.query.uid;
+    let allTid = await utils.getUserTjqd(uid) //根据传的uid获取所有的tid
+    let allTjqd = []
+    for( i in allTid){
+      allTjqd.push(await utils.getTjqd(allTid[i])) ////根据所有的tid获取所有的推荐清单
+    }
+    res.json({
+      code:1,
+      msg:'获取推荐清单成功',
+      data:allTjqd
+    })
+  },
+  // 增加清单收藏
+  async addTjqd(req,res,next){
+    let uid = req.query.uid;
+    let tid = req.query.tid;
+    let state = await utils.addTjqd(uid,tid)
+    let status = await utils.sortById('userTjqd') //重新给主键id排序
+    console.log(state);
+  },
+  // 取消清单收藏
+  async cancelTjqd(req,res,next){
+    let uid = req.query.uid;
+    let tid = req.query.tid;
+    let state = await utils.cancelTjqd(uid,tid)
+    let status = await utils.sortById('userTjqd') //重新给主键id排序
+    res.json({
+      code:1,
+      msg:'取消成功'
+    })
+  }
 }

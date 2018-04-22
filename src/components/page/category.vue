@@ -24,6 +24,15 @@
     </Card>
     <div class="clear"></div>
   </div>
+  <div class="paging" v-if="data.length!=0">
+    <el-pagination
+      background
+      layout="prev, pager, next"
+      :page-size	= pageSize
+      :current-page = curPage
+      :total= total>
+    </el-pagination>
+  </div>
   <Footer />>
 </div>
 </template>
@@ -46,14 +55,14 @@ export default {
       data:'',
       curPage:1,
       total:null,
-      pageSize:18,
+      pageSize:15,
       state: [],
       loading:true
     }
   },
   methods:{
     changeMenu(arr){
-      // console.log(arr);
+      console.log(arr);
       // 只输入一个条件时 0,1,2,3  4种情况
       if(arr[0]&&!arr[1]&&!arr[2]&&!arr[3]){
         switch(arr[0]){
@@ -216,7 +225,7 @@ export default {
         stateArr[0] = arr[0]
         stateArr[1] = arr[1]
         stateArr[2] = arr[2]
-        this.getMovieByStateAndClassAndYear(stateArr)
+        this.getMovieByStateAndClassAndCountry(stateArr)
       }else if(arr[0]&&!arr[1]&&arr[2]&&arr[3]){
         // 按状态 地区 年代
         let stateArr = {}
@@ -249,9 +258,14 @@ export default {
         stateArr[0] = arr[1]
         stateArr[1] = arr[2]
         stateArr[2] = arr[3]
-        // this.getMovieByTypeAndRegionAndYear(stateArr)
+        this.getMovieByTypeAndRegionAndYear(stateArr)
       }
       // 输入四种条件 1 2 3 4  1种
+      if(arr[0]&&arr[1]&&arr[2]&&arr[3]){
+        let stateArr = {}
+        stateArr = arr;
+        this.getMovieByAllConditions(stateArr)
+      }
     },
     curPaging(i){
       this.curPage = i
@@ -279,6 +293,27 @@ export default {
         }.bind(this))
         .catch(function (error) {
           // console.log(error);
+      });
+    },
+    // 四个条件
+    getMovieByAllConditions(state){
+      this.loading = true
+      console.log(state);
+      let tag = null
+      if(state[0]=='连载'){
+        tag = 0
+      }else{
+        tag = 1
+      }
+      axios.get('/api/movie/getMovieByAllConditions',{
+        params:{state:tag,type:state[1],region:state[2],year:state[3]}
+      }).then(function (response) {
+        this.total = response.data.length
+        this.data = response.data;
+        this.loading = false
+      }.bind(this))
+      .catch(function (error) {
+        console.log(error);
       });
     },
     // 按更新状态
@@ -476,7 +511,7 @@ export default {
         tag = 1
       }
       console.log(state);
-      axios.get('/api/movie/getMovieByStateAndClassAndYear',{
+      axios.get('/api/movie/getMovieByStateAndClassAndCountry',{
         params:{state:tag,type:state[1],country:state[2]}
       }).then(function (response) {
         this.total = response.data.length
@@ -511,7 +546,38 @@ export default {
     },
     // 按状态 类目 年代
     getMovieByStateAndTypeAndYear(state){
-      
+      this.loading = true
+      let tag = null
+      if(state[0]=='连载'){
+        tag = 0
+      }else{
+        tag = 1
+      }
+      axios.get('/api/movie/getMovieByStateAndTypeAndYear',{
+        params:{state:tag,type:state[1],year:state[2]}
+      }).then(function (response) {
+        this.total = response.data.length
+        this.data = response.data;
+        this.loading = false
+      }.bind(this))
+      .catch(function (error) {
+        console.log(error);
+      });
+    },
+    // 类目 地区 年代
+    getMovieByTypeAndRegionAndYear(state){
+      this.loading = true
+      axios.get('/api/movie/getMovieByTypeAndRegionAndYear',{
+        params:{type:state[0],country:state[1],year:state[2]}
+      }).then(function (response) {
+        this.total = response.data.length
+        this.data = response.data;
+        this.loading = false
+        console.log(response);
+      }.bind(this))
+      .catch(function (error) {
+        console.log(error);
+      });
     }
   },
   created(){
@@ -553,10 +619,14 @@ body{
 }
 .cardWrap{
   width: 1000px;
-  min-height: 500px;
   margin: 0 auto;
   padding: 30px 0 60px 30px;
   position: relative;
-  min-height: 500px;
+  // min-height: 500px;
+}
+.paging{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

@@ -5,10 +5,14 @@
       <router-link :to="{name:'detail',params:{id:data[index].id}}" ><img :src=data[index].img alt="图片"></router-link>
     </div>
     <div class="subText">
-      <p class="sub1"><router-link to="/">{{data[index].name}}</router-link></p>
+      <p class="sub1">
+        <router-link :to="{name:'detail',params:{id:data[index].id}}">
+          {{data[index].name}}
+        </router-link>
+      </p>
       <p class="sub2" v-if="state==0">更新至{{data[index].update}}</p>
       <p class="sub2" v-if="state==1">完结</p>
-      <div class="dingyue">
+      <div class="dingyue" @click="collect(data[index].id)">
         <div class="left">订阅</div>
         <div class="right">{{data[index].dingyue}}</div>
       </div>
@@ -31,27 +35,73 @@ export default {
   computed:{
   },
   methods:{
+    collect(id){
+      let uid = localStorage.getItem('id');
+      axios.get('/api/subscribe',{
+        params:{
+          uid:uid,
+          mid:id
+        }
+      })
+      .then(res=>{
+        if(res.data.code == 1 ){
+          this.getData()
+          this.$notify({
+            title: 'success',
+            message: '订阅成功',
+            type: 'success'
+          });
+        }else{
+          this.$notify.error({
+            title: 'faild',
+            message: res.data.msg,
+          });
+        }
+      })
+    },
+    getData(){
+      if(this.dataClass == '全部'){
+        axios.get('/api/movie/getMovieByState',{
+        params:{state:this.state}
+        }).then(function (response) {
+          this.data = response.data;
+        }.bind(this))
+        .catch(function (error) {
+          console.log(error);
+        });
+      }else{
+        axios.get('/api/movie/getMovieByStateCountry',{
+          params:{state:this.state,country:this.dataClass}
+        }).then(function (response) {
+          this.data = response.data;
+        }.bind(this))
+        .catch(function (error) {
+          console.log(error);
+        });
+      }
+    }
   },
   created(){
-    if(this.dataClass == '全部'){
-      axios.get('/api/movie/getMovieByState',{
-      params:{state:this.state}
-      }).then(function (response) {
-        this.data = response.data;
-      }.bind(this))
-      .catch(function (error) {
-        console.log(error);
-      });
-    }else{
-      axios.get('/api/movie/getMovieByStateCountry',{
-        params:{state:this.state,country:this.dataClass}
-      }).then(function (response) {
-        this.data = response.data;
-      }.bind(this))
-      .catch(function (error) {
-        console.log(error);
-      });
-    }
+    this.getData()
+    // if(this.dataClass == '全部'){
+    //   axios.get('/api/movie/getMovieByState',{
+    //   params:{state:this.state}
+    //   }).then(function (response) {
+    //     this.data = response.data;
+    //   }.bind(this))
+    //   .catch(function (error) {
+    //     console.log(error);
+    //   });
+    // }else{
+    //   axios.get('/api/movie/getMovieByStateCountry',{
+    //     params:{state:this.state,country:this.dataClass}
+    //   }).then(function (response) {
+    //     this.data = response.data;
+    //   }.bind(this))
+    //   .catch(function (error) {
+    //     console.log(error);
+    //   });
+    // }
   }
 }
 </script>

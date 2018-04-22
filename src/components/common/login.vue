@@ -153,8 +153,8 @@ export default {
             if(res.data.code == 1){
               this.$router.go(0)
               // 拿到数据写到vuex里去
-              console.log(res.data);
-              this.$store.dispatch('getTOKEN',{user:res.data.user,token:res.data.token,avtar:res.data.avtar})
+              // console.log(res.data);
+              this.$store.dispatch('getTOKEN',{user:res.data.user,token:res.data.token,avtar:res.data.avtar,id:res.data.id})
             }else{
               return false;
             }

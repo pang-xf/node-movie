@@ -9,7 +9,8 @@
     <List title="完结剧集" state="1"></List>
     <el-row>
       <el-col :span="14" :offset="5" class="tuijian">
-        推荐剧集
+        <p class="title">推荐剧集</p>
+        <tjqd />
       </el-col>
     </el-row>
     <Footer/>
@@ -21,6 +22,7 @@ import Banner from '@/components/common/banner.vue';
 import UserChoose from '@/components/common/userChoose.vue';
 import List from '@/components/common/list.vue';
 import Footer from '@/components/common/footer.vue';
+import tjqd from '@/components/common/tjqd.vue';
 export default {
   data(){
     return{
@@ -32,7 +34,8 @@ export default {
     Banner,
     UserChoose,
     List,
-    Footer
+    Footer,
+    tjqd
   },
 }
 </script>
@@ -60,6 +63,10 @@ a{
   border-radius: 3px;
   padding: 8px 16px;
   margin-bottom: 20px;
+  .title{
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+  }
 }
 .banner{
   margin: 0 auto;

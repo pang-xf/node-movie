@@ -1,9 +1,6 @@
 // 所以的sql语句
 var sqlMap = {
   movie: {
-    insert:'INSERT INTO user(user_id,author,title,tyep,loadURL,tag,summary,posy_time,upd_time) VALUES(8023,陈亮,?,0,$,tag,?,?,?)',
-    update:'update blog set name=?, age=? where id=?',
-    delete: 'delete from blog where id=?',
     queryByStateCountry: 'SELECT * FROM MOVIE WHERE STATE=? AND COUNTRY=?',
     queryByState: 'SELECT * FROM MOVIE WHERE STATE=?',
     queryAll: 'SELECT * FROM MOVIE',
@@ -15,6 +12,9 @@ var sqlMap = {
     queryByStateAndType:'SELECT * FROM MOVIE WHERE STATE=? AND TYPE=?', 
     queryByTypeAndCountry:'SELECT * FROM MOVIE WHERE type=? AND country=?', 
     queryByStateAndTypeAndCountry:'SELECT * FROM MOVIE WHERE state=? AND type=? AND country=?', 
+    queryByStateAndTypeAndYear:'SELECT * FROM MOVIE WHERE state=? AND type=? AND year=?',
+    queryByTypeAndRegionAndYear:'SELECT * FROM MOVIE WHERE country=? AND type=? AND year=?',
+    queryTjqd:'SELECT * FROM tjqd',
   },
   playList:{
     queryPlayListByMid:'SELECT * FROM playList where mid=?'     
@@ -22,7 +22,16 @@ var sqlMap = {
   user:{
     queryUser: 'SELECT COUNT(1) as result FROM USER where USER=? AND PWD=?',
     queryUserOnly: 'SELECT COUNT(1) as result FROM USER where USER=?',
-    queryUserAvtar: 'SELECT AVTAR FROM USER WHERE USER=?',
+    queryUserAvtar: 'SELECT id,AVTAR FROM USER WHERE USER=?',
+  },
+  subscribe:{
+    queryMidByuid:'SELECT mid FROM subscribe where uid=?',
+    cancelSub:'DELETE  FROM subscribe where mid=?',
+    userSubscribe:'INSERT INTO subscribe  (uid,mid) values (?,?)',
+  },
+  tjqd:{
+    addTjqd:'INSERT INTO userTjqd  (uid,tid) values (?,?)',
+    tjqdAddCollect:'update tjqd set collect=? where id = ?',
   }
 }
 

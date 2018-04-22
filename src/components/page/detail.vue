@@ -251,7 +251,7 @@ export default {
           margin-top: 14px;
           color:#000;
           .dingyue{
-            width: 131.5px;
+            // width: 131.5px;
             height: 100%;
             cursor: pointer;
             float: left;
@@ -269,7 +269,9 @@ export default {
               width: 70px;
             }
             .rightNum{
-              text-align: center;
+              float: left;
+              height: 100%;
+              padding: 2px 5px;
               color:#E05E53;
             }
           }

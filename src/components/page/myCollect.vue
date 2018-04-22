@@ -7,13 +7,13 @@
             <li>
               <router-link to="#">
                 <div class="icon"></div>
-                <router-link to="/myCollect" style="color:#000;font-weight:bold">我的订阅</router-link>
+                <router-link to="/mylist">我的订阅</router-link>
               </router-link>
             </li>
             <li>
               <router-link to="#">
                 <div class="icon"></div>
-                <router-link to="/myCollect">我收藏的清单</router-link>
+                <router-link to="/myCollect" style="color:#000;font-weight:bold">我收藏的清单</router-link>
               </router-link>
             </li>
           </ul>
@@ -22,7 +22,7 @@
         <!-- header -->
         <div class="header">
           <div class="top">
-            <p>我的订阅清单</p>
+            <p>我收藏的清单</p>
           </div>
           <div class="bottom">
             <img :src="avtar" alt="" class="avtar">
@@ -36,18 +36,20 @@
           <div class="sub_items" v-for="(item,index) in data" :key="index">
             <div class="left">
               <router-link to="#">
-              <img :src="item[0].img" alt="" class="full">
+              <img :src="item.img" alt="" class="full">
               </router-link>
             </div>
             <div class="right">
-              <span class="cancleSub" @click="cancleSub(item[0].id)">取消订阅</span>
-              <router-link to="#" class="name">{{item[0].name}}</router-link>
-              <p class="state">{{item[0].state}}</p>
-              <p class="state">共{{item[0].all}}集</p>
+              <span class="cancleSub" @click="cancleSub(item.id)">取消收藏</span>
+              <router-link to="#" class="name">{{item.name}}</router-link>
+              <p class="state">简介:{{item.intro}}</p>
+              <p class="state">总数目:{{item.count}}</p>
+              <p class="state">总收藏数:{{item.collect}}</p>
+              <p class="state">{{item.time}}</p>
             </div>
           </div>
         </div>
-        <div class="none flexCen" v-show="data.length==0">
+         <div class="none flexCen" v-show="data.length==0">
           暂无记录,快去订阅吧。
         </div>
         <!-- 最新推荐 -->
@@ -80,35 +82,33 @@ export default {
   methods:{
     getData(){
       let uid = localStorage.getItem('id')
-      axios.get('/api/user/userSubscribe',{
+      axios.get('/api/userCollect',{
         params:{
           uid:uid
         }
       })
       .then(res=>{
+        console.log(res);
         this.data = res.data.data
-        for(let i=0;i<this.data.length;i++){
-          if(this.data[i][0].state == 1){
-            this.data[i][0].state = '完结'
-          }else{
-            this.data[i][0].state = '连载'
-          }
-        }
       })
     },
-    cancleSub(id){
-      // 取消订阅
-      axios.get('/api/movie/cancelSub',{
+    cancleSub(tid){
+      let uid = localStorage.getItem('id')
+      console.log(tid);
+      // 取消收藏
+      axios.get('/api/tjqd/cancel',{
         params:{
-          id:id
+          tid:tid,
+          uid:uid
         }
       })
       .then(res=>{
-        if(res.data.data.affectedRows == 1 ){
+        console.log(res);
+        if(res.data.code == 1 ){
           this.getData()
           this.$notify.info({
             title: '取消成功',
-            message: '已取消订阅',
+            message: '已取消收藏',
             type: 'success'
           });
         }else{
@@ -242,16 +242,16 @@ export default {
       }
       .right{
         width: 83%;
-        height: 120px;
+        height: 130px;
         float: left;
-        padding: 12px;
+        padding: 5px 12px;
         box-sizing: border-box;
         position: relative;
         font-size: 16px;
         .cancleSub{
           position: absolute;
           right: 10px;
-          top: 15px;
+          top: 12px;
           font-size: 14px;
           cursor: pointer;
           &:hover{
@@ -262,7 +262,7 @@ export default {
           display: block;
           color: #555;
           transition: all .25s;
-          margin-bottom: 30px;
+          margin-bottom: 5px;
           &:hover{
             color:salmon;
           }
@@ -270,6 +270,7 @@ export default {
         p{
           color: #777;
           font-size: 14px;
+          margin-bottom: 2px;
         }
       }
     }
