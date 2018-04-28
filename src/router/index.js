@@ -6,6 +6,7 @@ import notFound from '@/components/page/notFound'
 import category from '@/components/page/category'
 import mylist from '@/components/page/mylist'
 import myCollect from '@/components/page/myCollect'
+import cardCate from '@/components/common/cardCate'
 import store from '@/store/index'
 Vue.use(Router)
 const router =  new Router({
@@ -34,8 +35,24 @@ const router =  new Router({
       meta:{
         // keepAlive:true,
         title:'分类'
-      }
+      },
+      children: [
+        // 当 /user/:id 匹配成功，
+        // UserHome 会被渲染在 User 的 <router-view> 中
+        { path: '/category/:id', name:'cardCate',component: cardCate },
+
+        // ...其他子路由
+      ]
     },
+    // {
+    //   path:'/category/menu/:params',
+    //   name:'category',
+    //   component:category,
+    //   meta:{
+    //     // keepAlive:true,
+    //     title:'分类'
+    //   }
+    // },
     {
       path:'/mylist',
       name:'mylist',

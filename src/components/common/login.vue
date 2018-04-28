@@ -24,6 +24,11 @@
                 <el-form-item label="密码" prop="password">
                   <el-input v-model="form.password" placeholder="请输入密码"></el-input>
                 </el-form-item>
+                <el-form-item label="验证码" prop="yzm">
+                  <el-input v-model="form.yzm" placeholder="请输入验证码(小写)" style="width:70%;float:left">
+                  </el-input>
+                  <a href="#" style="width:29%;height:98%;float:left;display:block;" class="cap" @click="getCaptcha"> {{cap}}</a>
+                </el-form-item>
                 <p class="zhuce">
                   <router-link to="#">忘记密码?点这里</router-link>
                 </p>
@@ -47,8 +52,12 @@
                 <el-form-item label="重复密码" prop="repeatPwd">
                   <el-input v-model="form2.repeatPwd" placeholder="请再次输入上面的密码"></el-input>
                 </el-form-item>
+                <el-form-item label="验证码" prop="yzm">
+                  <el-input v-model="form2.yzm" placeholder="请输入验证码(小写)" style="width:70%;float:left"></el-input>
+                  <a href="#" style="width:29%;height:98%;float:left;display:block;" class="cap" @click="getCaptcha"> {{cap}}</a>
+                </el-form-item>
                 <el-form-item class="btn">
-                  <el-button type="primary" @click="submitRegForm('form2')">立即登录</el-button>
+                  <el-button type="primary" @click="submitRegForm('form2')">立即注册</el-button>
                 </el-form-item>
               </el-form>
             </div>
@@ -70,15 +79,25 @@ export default {
         callback();
       }
     }
+    var validateYzm = (rule, value, callback) =>{
+      let captcha = document.cookie.split('=')[1] 
+      if (value !== captcha) {
+        callback(new Error('验证码错误'));
+      } else {
+        callback();
+      }
+    }
     return{
       form:{
-        username:'jack',
+        username:'pdd',
         password:'123456',
+        yzm:''
       },
       form2:{
         username:'liyu2',
         password:'123456',
         repeatPwd:'123456',
+        yzm:''
       },
       top:'top',
       showLoginModal:true,
@@ -102,6 +121,20 @@ export default {
           },
           {
             min: 6, max: 10, message: '请输入6-10位密码', trigger: 'blur'
+          }
+        ],
+        yzm:[
+          {
+            required: true,
+            message: '请输入验证码',
+            trigger: 'blur',
+          },
+          {
+            validator: validateYzm,
+            trigger: 'blur'
+          },
+          {
+            min: 4, max: 4, message: '请输入4位验证码', trigger: 'blur'
           }
         ]
       },
@@ -136,11 +169,50 @@ export default {
           {
             min: 6, max: 10, message: '请输入6-10位密码', trigger: 'blur'
           },
+        ],
+        yzm:[
+          {
+            required: true,
+            message: '请输入验证码',
+            trigger: 'blur',
+          },
+          {
+            validator: validateYzm,
+            trigger: 'blur'
+          },
+          {
+            min: 4, max: 4, message: '请输入4位验证码', trigger: 'blur'
+          }
         ]
-      }
+      },
+      cap:''
     }
   },
+  mounted(){
+    this.getCaptcha()
+  },
   methods:{
+    getCaptcha(){
+      axios.get('/api/getCaptcha')
+      .then(res=>{
+        this.cap = res.data.data
+      })
+    },
+    getTime(){
+       var date = new Date();
+        var seperator1 = "-";
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = year + seperator1 + month + seperator1 + strDate;
+        return currentdate;
+    },
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -151,12 +223,23 @@ export default {
           })
           .then(res=>{
             if(res.data.code == 1){
-              this.$router.go(0)
-              // 拿到数据写到vuex里去
-              // console.log(res.data);
-              this.$store.dispatch('getTOKEN',{user:res.data.user,token:res.data.token,avtar:res.data.avtar,id:res.data.id})
+              this.$alert('欢迎来到追剧管家 ^_^', '登录成功', {
+                confirmButtonText: '确定',
+                type: 'success',
+                callback: action => {
+                      // 拿到数据写到vuex里去
+                  this.$store.dispatch('getTOKEN',{user:res.data.user,token:res.data.token,avtar:res.data.avtar,id:res.data.id})
+                  this.$router.go(0)
+                }
+              })
             }else{
-              return false;
+              this.$alert('用户名或者密码错误', '登录失败', {
+                confirmButtonText: '确定',
+                type: 'warning',
+                callback: action => {
+                  this.getCaptcha()
+                }
+              })
             }
           })
         }
@@ -167,22 +250,25 @@ export default {
         if (valid) {
           let form = this.$refs[formName].$options.propsData.model
           let user = form.username,pwd = form.password,root='1',avtar='https://ws1.sinaimg.cn/large/005N37m4gy1fq5kwt78dpj30b40b4t8t.jpg'
+          let time = this.getTime()
           axios.post("/api/user/register",{
-            params:{user:user,pwd:pwd,avtar:avtar,root:root}
+            params:{user:user,pwd:pwd,avtar:avtar,root:root,regtime:time}
           })
           .then(res=>{
-            console.log(res);
             // 说明用户名已经存在
             if(res.data.code == -1){
               this.$alert('该用户名已被注册', '注册失败', {
                 confirmButtonText: '确定',
+                type: 'warning',
                 callback: action => {
+                  this.getCaptcha()
                   // this.$router.go(0)
                 }
               })
             }else{
               this.$alert('欢迎来到追剧管家,赶快登录吧', '注册成功', {
                 confirmButtonText: '确定',
+                type: 'success',
                 callback: action => {
                   this.$router.go(0)
                 }
@@ -206,13 +292,13 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     background: none;
-    width: 700px !important;
+    width: 800px !important;
     border-radius: 10px !important;
     .el-dialog__header{
       display: none;
     }
     .el-dialog__body{
-      width: 700px !important;
+      width: 800px !important;
       margin: 0;
       padding:0;
       display: block;
@@ -221,14 +307,14 @@ export default {
   }
   .content{
     width: 100%;
-    height: 430px;
+    height: 530px;
     box-shadow: 0 1px 30px #333;
     border-radius: 10px !important;
     .left{
       width: 50%;
       height: 100%;
       float: left;
-      background: url(http://neets.cc/assets/img/load.png);
+      background: url(http://oo9xy1zeh.bkt.clouddn.com/load.png);
       background-size: cover;
       border-top-left-radius: 10px !important;
       border-bottom-left-radius: 10px !important;
@@ -300,6 +386,18 @@ export default {
         }
       }
     }
+  }
+  .cap{
+    color:salmon;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    background: #efefef;
+    height: 35px !important;
+    line-height: 35px !important;
+    position: relative;
+    top: 2px;
+    border-radius: 0 3px 3px 0;
   }
 }
 </style>

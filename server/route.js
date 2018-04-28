@@ -106,7 +106,7 @@ router.get('/api/user/userSubscribe',function(req, res, next){
 router.get('/api/movie/cancelSub',function(req, res, next){
   return api.cancelSub(req, res, next);
 })
-// 用户订阅
+// 用户点击订阅
 router.get('/api/subscribe',function(req, res, next){
   return api.subscribe(req, res, next);
 })
@@ -121,5 +121,17 @@ router.get('/api/addTjqd',function(req, res, next){
 // 取消用户收藏
 router.get('/api/tjqd/cancel',function(req, res, next){
   return api.cancelTjqd(req, res, next);
+})
+// 获取用户推荐的电影列表  我的推荐
+router.get('/api/userLikes',function(req, res, next){
+  return api.userLikes(req, res, next);
+})
+// 点击卡片  用户感兴趣
+router.get('/api/likeCount',function(req, res, next){
+  return api.likeCount(req, res, next);
+})
+// 获取验证码
+router.get('/api/getCaptcha', function(req, res, next) {
+  return api.getCaptcha(req, res, next);
 })
 module.exports = router;

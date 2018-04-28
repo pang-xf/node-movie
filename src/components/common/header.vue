@@ -17,7 +17,7 @@
             >
               <el-menu-item index="/">首页</el-menu-item>
               <el-menu-item index="/mylist">我的清单</el-menu-item>
-              <el-menu-item index="/category" route="/category">分类</el-menu-item>
+              <el-menu-item index="/category" route="/category/全部">分类</el-menu-item>
             </el-menu>
           </el-col>
           <!-- 搜索 -->

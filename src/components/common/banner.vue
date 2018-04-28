@@ -68,8 +68,8 @@ export default {
     }
   }
   height: 380px;
-  background: url(http://neets.cc/assets/img/banner.png);
-  background-size: cover;
+  background: url(http://oqlmukw41.bkt.clouddn.com/wallhaven-647063.jpg)no-repeat;
+  background-size: 100% 100%;
   .wrap{
     width:100%;
     height: 380px;

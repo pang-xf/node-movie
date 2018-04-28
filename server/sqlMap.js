@@ -32,6 +32,7 @@ var sqlMap = {
   tjqd:{
     addTjqd:'INSERT INTO userTjqd  (uid,tid) values (?,?)',
     tjqdAddCollect:'update tjqd set collect=? where id = ?',
+    collectNum:'SELECT collect FROM tjqd WHERE id=?',
   }
 }
 

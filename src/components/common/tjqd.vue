@@ -44,9 +44,19 @@ export default {
         }
       })
       .then(res=>{
-        this.tjqd()
-        // this.data = res.data
-        console.log(res);
+        if(res.data.code == 1){
+          this.tjqd()
+          this.$notify({
+            title: 'success',
+            message: '订阅成功',
+            type: 'success'
+          });
+        }else{
+          this.$notify.error({
+            title: 'faild',
+            message: res.data.msg,
+          });
+        }
       })
     }
   }

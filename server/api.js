@@ -45,10 +45,13 @@ module.exports = {
   },
   //  分页查询 全部 点击分页器
   getMovieBypage(req,res,next){
-    let count = req.query.pageSize; //每页的数据量 前端传入
-    let curPage = req.query.curPage;//当前页  前端传入
+    let count = Number(req.query.count); //每页的数据量 前端传入
+    let curPage = Number(req.query.curPage);//当前页  前端传入
     let start = count*(curPage-1); //起始的位置
+    console.log(count);
+    console.log(curPage);
     let sql = `SELECT * FROM MOVIE limit ${start},${count}`
+    console.log(sql);
     pool.getConnection((err, connection) => {
       if(err) throw err;
       // 先拿到总条数 返回给前端 要做统计总页数      
@@ -345,6 +348,7 @@ module.exports = {
       pwd:req.body.params.pwd,
       avtar:req.body.params.avtar,
       root:req.body.params.root,
+      regtime:req.body.params.regtime,
     }
     pool.getConnection((err,connection)=>{
       connection.query(sqlMap.user.queryUserOnly,user,(err,result) => {
@@ -432,9 +436,28 @@ module.exports = {
   async addTjqd(req,res,next){
     let uid = req.query.uid;
     let tid = req.query.tid;
+    let isHasTid = await utils.getTid(uid,tid) //查询该用户的tid是否存在
+    if(isHasTid>0){
+      res.json({
+        code:-1,
+        msg:'收藏失败,你已收藏过该清单，请勿重复收藏 ^_^'
+      })
+      return 
+    }
     let state = await utils.addTjqd(uid,tid)
+    let state2 = await utils.tjqdAddCollect(tid) //清单收藏数加1
     let status = await utils.sortById('userTjqd') //重新给主键id排序
-    console.log(state);
+    if(!state.affectedRows==1){
+      res.json({
+        code:-1,
+        msg:'收藏失败'
+      })
+      return
+    }
+    res.json({
+      code:1,
+      msg:'收藏成功'
+    })
   },
   // 取消清单收藏
   async cancelTjqd(req,res,next){
@@ -445,6 +468,47 @@ module.exports = {
     res.json({
       code:1,
       msg:'取消成功'
+    })
+  }, 
+  // 获取用户喜欢的电影  首页 我的推荐  先获取uid  再根据uid获取mid 再用mid查询movie表  拿到这些值
+  async userLikes(req,res,next){
+    let uid = req.query.uid;
+    let mid = await utils.getCategory(uid)  //应该是一个数组
+    let data = []
+    for(i in mid){
+      data.push(await utils.getMovieByMid(mid[i]))
+    }
+    let newData = utils.panelArr(data) //拍平数组
+    res.json({
+      code:1,
+      msg:'获取我的推荐成功',
+      data:newData
+    })
+  },
+  // 用户喜欢的次数++
+  async likeCount(req,res,next){
+    let uid = req.query.uid;
+    let mid = req.query.mid 
+    let count = await utils.getUserLikeCount(uid,mid)
+    let data = await utils.handlrUserLike(uid,mid,count)
+    let status = await utils.sortById('userlikes')
+    res.json({
+      code:1,
+      msg:'感兴趣+1',
+      data:data
+    })
+  },
+  // 生产验证码
+  async getCaptcha(req,res,next){
+    let data = await utils.getCaptcha()
+    // 保存到session,忽略大小写  
+    req.session = data.text.toLowerCase(); 
+    // console.log(req.session); // 生成的验证码
+    //保存到cookie 方便前端调用验证
+    res.cookie('captcha', req.session); 
+    res.json({
+      code:1,
+      data:req.session
     })
   }
 }

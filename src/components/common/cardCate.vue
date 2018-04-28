@@ -1,35 +1,80 @@
 <template>
 <div class="wrap">
-  <div class="card" v-for="(value,index) in data" :key="index" v-show="data.length!=0">
+  <div class="card" v-for="(value,index) in fetchMenuData" :key="index" v-show="fetchMenuData.length!=0">
     <div class="subImg">
-      <router-link :to="{name:'detail',params:{id:data[index].id}}" ><img :src=data[index].img alt="图片"></router-link>
+      <router-link :to="{name:'detail',params:{id:value.id}}" ><img :src=value.img alt="图片"></router-link>
     </div>
     <div class="subText">
-      <p class="sub1"><router-link to="/">{{data[index].name}}</router-link></p>
-      <p class="sub2" v-show="state[index] == 0">更新至{{data[index].update}}</p>
-      <p class="sub2" v-show="state[index] == 1">共{{data[index].all}}集</p>
+      <p class="sub1"><router-link to="/">{{value.name}}</router-link></p>
+      <p class="sub2" v-show="value.state == 0">更新至{{value.update}}</p>
+      <p class="sub2" v-show="value.state == 1">共{{value.all}}集</p>
       <div class="dingyue">
         <div class="left">订阅</div>
-        <div class="right">{{data[index].dingyue}}</div>
+        <div class="right">{{value.dingyue}}</div>
       </div>
     </div>
   </div>
-  <div class="none" v-show="data.length==0">
+  <div class="none" v-show="fetchMenuData.length==0">
     暂无数据
   </div>
 </div>
 </template>
 <script>
+import axios from 'axios'
+import { mapGetters } from 'vuex'
 export default {
-  props:['state','data'],
   data(){
     return{
+      data:'',
+      count:12
     }
   },
   mounted(){
     global.islogin = true;
+    this.getData()
+  },
+  computed:{
+    ...mapGetters(['currentCategory']),
+    ...mapGetters(['fetchMenuData'])
+  },
+  watch:{
+    '$route' (to, from) {
+      // 对路由变化作出响应...  重新获取数据
+        console.log(to.params.id);
+      }
   },
   methods:{
+    // 两个参数  第一个是菜单得总分类(状态，类目，地区，年代) 第二个是总分类下得子类
+    // 默认为总的  全部
+    getData(state,query){
+      if(this.$route.params.id == '全部'){
+        this.$store.dispatch('getDataByMenuAll',{
+          count:this.count,
+          curPage:1
+        })
+        return
+      }
+      //  console.log(this.$route.params.id);
+      // console.log(state);
+      // if(!state&&!query){
+      //   axios.get('/api/movie/getMovieAll')
+      //   .then(res=>{
+      //     this.data = res.data
+      //     console.log(this.data);
+      //   })
+      //   .catch(err=>{
+      //     console.log(err);
+      //   })
+      // }else if(!query){
+      //   axios.get('')
+      //   .then(res=>{
+
+      //   })
+      //   .catch(err=>{
+      //     console.log(err);
+      //   })
+      // }
+    }
   },
 }
 </script>
@@ -41,6 +86,13 @@ export default {
   left: 0;
   right: 0;
   // top: 0;
+}
+.wrap{
+  width: 800px;
+  min-height: 650px;
+  border:1px solid #000;
+  margin: 20px auto;
+  float: right;
 }
 .card{
   overflow: hidden;
