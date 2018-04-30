@@ -30,7 +30,7 @@ const actions = {
       params:{id:params.id}
     })
     .then(res=>{
-      let payload = res.data;
+      let payload = res.data.data;
       commit("GET_FILM_DETAIL",payload)
     })
     .catch(function (error) {

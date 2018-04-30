@@ -3,19 +3,19 @@
     <el-card class="box-card" v-loading="loading">
       <div slot="header" class="clearfix">
         <span>新剧推荐</span>
-        <el-button style="float: right; padding: 3px 0" type="text">更多</el-button>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="moreMovie">更多</el-button>
       </div>
       <div  class="wrap">
         <div class="card" v-for="(item,index) in data" :key="index">
           <div class="leftImg">
-            <router-link to="#">
+            <router-link :to="{name:'detail',params:{id:data[index].id}}">
               <img :src="data[index].img" alt="data[index].name">              
             </router-link>
           </div>
           <div class="rightCon">
-            <router-link to="#" class="name">{{data[index].name}}</router-link>
+            <router-link :to="{name:'detail',params:{id:data[index].id}}" class="name">{{data[index].name}}</router-link>
             <p class="update">更新至{{data[index].update}}</p>
-            <div class="dingyue">
+            <div class="dingyue" @click="collect(data[index].id)">
               <div class="sub1">订阅</div>
               <div class="sub2">{{data[index].dingyue}}</div>
             </div>
@@ -37,14 +37,47 @@ export default {
   created(){
   },
   mounted(){
-    axios.get('/api/movie/getMovieByTime').then(function (response) {
+   this.getData()
+  },
+  methods:{
+    moreMovie(){
+      this.$router.push({
+        path:'/category/all/全部/1'
+      })
+    },
+    getData(){
+      axios.get('/api/movie/getMovieByTime').then(function (response) {
         this.data = response.data;
         this.loading = false
-        // console.log(this.data);
       }.bind(this))
       .catch(function (error) {
         console.log(error);
-    });
+      });
+    },
+    collect(id){
+      let uid = localStorage.getItem('id');
+      axios.get('/api/subscribe',{
+        params:{
+          uid:uid,
+          mid:id
+        }
+      })
+      .then(res=>{
+        if(res.data.code == 1 ){
+          this.getData()
+          this.$notify({
+            title: 'success',
+            message: '订阅成功',
+            type: 'success'
+          });
+        }else{
+          this.$notify.error({
+            title: 'faild',
+            message: res.data.msg,
+          });
+        }
+      })
+    },
   }
 }
 </script>

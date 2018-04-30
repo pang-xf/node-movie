@@ -70,9 +70,10 @@ export default {
   justify-content:space-between;
   flex-wrap: wrap;
   .tjqd_item{
-    width: 300px;
-    height: 100px;
+    width: 32%;
+    height: 120px;
     margin-top: 10px;
+    border: 1px solid #666;
     .left{
       width: 35%;
       height: 100%;

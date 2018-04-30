@@ -94,6 +94,10 @@ router.post('/api/user/register',function(req, res, next){
 router.get('/api/getMovieBypage', function(req, res, next) {
   return api.getMovieBypage(req, res, next);
 })
+// 分页查询 按条件
+router.get('/api/getMovieByConditions', function(req, res, next) {
+  return api.getMovieByConditions(req, res, next);
+})
 // 获取推荐清单
 router.get('/api/getTjqd', function(req, res, next) {
   return api.getTjqd(req, res, next);
@@ -133,5 +137,13 @@ router.get('/api/likeCount',function(req, res, next){
 // 获取验证码
 router.get('/api/getCaptcha', function(req, res, next) {
   return api.getCaptcha(req, res, next);
+})
+// 获取用户更新
+router.get('/api/userLooks', function(req, res, next) {
+  return api.userLooks(req, res, next);
+})
+// 用户观看更新
+router.get('/api/updateUserLooks', function(req, res, next) {
+  return api.updateUserLooks(req, res, next);
 })
 module.exports = router;

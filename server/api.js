@@ -43,7 +43,7 @@ module.exports = {
       })
     })
   },
-  //  分页查询 全部 点击分页器
+  //  分页查询 全部内容 点击分页器
   getMovieBypage(req,res,next){
     let count = Number(req.query.count); //每页的数据量 前端传入
     let curPage = Number(req.query.curPage);//当前页  前端传入
@@ -51,10 +51,9 @@ module.exports = {
     console.log(count);
     console.log(curPage);
     let sql = `SELECT * FROM MOVIE limit ${start},${count}`
-    console.log(sql);
     pool.getConnection((err, connection) => {
       if(err) throw err;
-      // 先拿到总条数 返回给前端 要做统计总页数      
+      // 先拿到总条数 返回给前端 要做统计总页数
       let promise = function(){
         return new Promise(((resolve,reject)=>{
           connection.query(sqlMap.movie.queryAll,(err,result) => {
@@ -85,7 +84,62 @@ module.exports = {
           }
           connection.release();
         })
-      })      
+      })
+    })
+  },
+  // 分页查询每条内容 按传过来的条件
+  getMovieByConditions(req,res,next){
+    let count = Number(req.query.count); //每页的数据量
+    let curPage = Number(req.query.curPage);//当前页
+    let start = count*(curPage-1); //起始的位置
+    let mainClass = req.query.mainClass; //查询的主条件
+    let menu = req.query.menu; //查询的副条件
+    pool.getConnection((err, connection) => {
+      if(err) throw err;
+      // 先拿到总条数 返回给前端 要做统计总页数
+      let promise = function(){
+        let sql = ''
+        return new Promise(((resolve,reject)=>{
+          if(mainClass == 'time'){
+            sql = `SELECT * FROM MOVIE where ${mainClass} like '%${menu}_%_%'`
+          }else{
+            sql = `SELECT * FROM MOVIE where ${mainClass} = '${menu}'`            
+          }
+          connection.query(sql,(err,result) => {
+            if(err){
+              return reject(err);
+            }
+            resolve(result.length);
+          })
+        }))
+      }
+      promise().then(function(val){
+        let sql = ''
+        if(mainClass == 'time'){
+            sql = `SELECT * FROM MOVIE where ${mainClass} like '%${menu}_%_%' limit ${start},${count}`
+          }else{
+          sql = `SELECT * FROM MOVIE where ${mainClass} = '${menu}' limit ${start},${count}`         
+        }
+        connection.query(sql, (err, result) => {
+          if(err){
+            res.json({
+              code:'-1',
+              msg:'操作失败',
+            })
+            throw err
+          }else{
+            // 计算总页数
+            res.json({
+              length:val,  //这里是数据库的总条数
+              data:result,
+              code:'1',
+              msg:'操作成功',
+              curPage:curPage
+            })
+          }
+          connection.release();
+        })
+      })
     })
   },
   // 按更新状态获取电影
@@ -235,7 +289,6 @@ module.exports = {
     let type = req.query.type;
     let year = req.query.year;
     let sql = `SELECT * FROM MOVIE WHERE country = '${country}' AND type = '${type}' AND time like '%${year}_%_%'`
-    console.log(sql);
     pool.getConnection((err,connection)=>{
       connection.query(sql,(err,result) => {
         jsonWrite(res,result);
@@ -274,13 +327,11 @@ module.exports = {
     })
   },
   // 按电影的ID获取影片详情
-  getMovieById(req,res,next){
+  async getMovieById(req,res,next){
     let id = req.query.id;
-    pool.getConnection((err,connection)=>{
-      connection.query(sqlMap.movie.queryById,[id],(err,result) => {
-        jsonWrite(res,result);
-        connection.release();
-      })
+    let data = await utils.getMovieById(id);
+    res.json({
+      data:data
     })
   },
   // 新剧推荐  按时间排序
@@ -296,7 +347,7 @@ module.exports = {
   getPlayListByMid(req,res,next){
     let mid = req.query.mid;
     pool.getConnection((err,connection)=>{
-      connection.query(sqlMap.playList.queryPlayListByMid,{mid},(err,result) => {
+      connection.query(sqlMap.playList.queryPlayListByMid,[mid],(err,result) => {
         jsonWrite(res,result);
         connection.release();
       })
@@ -442,7 +493,7 @@ module.exports = {
         code:-1,
         msg:'收藏失败,你已收藏过该清单，请勿重复收藏 ^_^'
       })
-      return 
+      return
     }
     let state = await utils.addTjqd(uid,tid)
     let state2 = await utils.tjqdAddCollect(tid) //清单收藏数加1
@@ -469,7 +520,7 @@ module.exports = {
       code:1,
       msg:'取消成功'
     })
-  }, 
+  },
   // 获取用户喜欢的电影  首页 我的推荐  先获取uid  再根据uid获取mid 再用mid查询movie表  拿到这些值
   async userLikes(req,res,next){
     let uid = req.query.uid;
@@ -488,7 +539,7 @@ module.exports = {
   // 用户喜欢的次数++
   async likeCount(req,res,next){
     let uid = req.query.uid;
-    let mid = req.query.mid 
+    let mid = req.query.mid
     let count = await utils.getUserLikeCount(uid,mid)
     let data = await utils.handlrUserLike(uid,mid,count)
     let status = await utils.sortById('userlikes')
@@ -501,14 +552,66 @@ module.exports = {
   // 生产验证码
   async getCaptcha(req,res,next){
     let data = await utils.getCaptcha()
-    // 保存到session,忽略大小写  
-    req.session = data.text.toLowerCase(); 
+    // 保存到session,忽略大小写
+    req.session = data.text.toLowerCase();
     // console.log(req.session); // 生成的验证码
     //保存到cookie 方便前端调用验证
-    res.cookie('captcha', req.session); 
+    res.cookie('captcha', req.session);
     res.json({
       code:1,
       data:req.session
     })
-  }
+  },
+  // 获取用户更新的电影  首页 我的更新  先获取uid  再根据uid获取mid 再用mid查询movie表  拿到这些值
+  async userLooks(req,res,next){
+    let uid = req.query.uid;
+    let mid = await utils.handlrUserLooks(uid)  //应该是一个数组 拿到mid 和 look
+    let userCurrentLookArr = []
+    for(i in mid){
+      userCurrentLookArr.push(mid[i].look)
+    }
+    let lookArr = []
+    for(i in mid){
+      lookArr.push(await utils.getUserLook(mid[i].mid))
+    }
+    let newData = utils.panelArr(lookArr) //拍平数组
+    lookArr.length = 0;
+    for(i in newData){
+      lookArr.push(+newData[i])
+    }
+    // 拿到对比 不同的话返回
+    // 返回内容 movie表 userlook表中的look
+    for(let i=0;i<lookArr.length;i++){
+      if(lookArr[i]==userCurrentLookArr[i]){
+        return
+      }else{
+        let movie = []
+        for(i in mid){
+          movie.push(await utils.getMovieById(mid[i].mid))
+        }
+        movie = utils.panelArr(movie) //拍平数组
+        res.json({
+          code:1,
+          msg:'获取我的更新',
+          data:{
+            movie:movie,
+            userCurrentLookArr:userCurrentLookArr
+          }
+        })
+      }
+    }
+  },
+   // 用户观看更新
+   async updateUserLooks(req,res,next){
+    let uid = req.query.uid;
+    let mid = req.query.mid
+    let look = req.query.look
+    let data = await utils.updateUserLooks(uid,mid,look)
+    if(data.affectedRows<1)
+      return
+    res.json({
+      code:1,
+      msg:'更新成功',
+    })
+  },
 }

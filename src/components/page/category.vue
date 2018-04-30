@@ -2,23 +2,15 @@
 <div class="wrap">
   <Header/>
   <div class="content">
-    <NavMenu 
+    <NavMenu
     @changeMenu = changeMenu
-    > 
+    >
     </NavMenu>
-    <router-view></router-view>   
-  </div> 
-  <!-- <div class="paging" v-if="data.length!=0">
-    <el-pagination
-      background
-      layout="prev, pager, next"
-      :page-size	= pageSize
-      :current-page = curPage
-      :total= total>
-    </el-pagination>
-  </div> -->
+    <router-view></router-view>
+  </div>
+
   <div class="footer">
-    <Footer />    
+    <Footer />
   </div>
 </div>
 </template>
@@ -61,10 +53,9 @@ body{
   clear: both;
 }
 .content{
-  width: 1200px;
-  height:850px;
-  background: #ccc;
-  margin: 90px auto;
+  width: 980px;
+  // height:700px;
+  margin: 90px auto auto auto;
 }
 .footer{
   height: 200px;
@@ -74,10 +65,5 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.paging{
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 </style>

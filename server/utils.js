@@ -334,5 +334,59 @@ module.exports={
     return new Promise((resolve,reject)=>{
       resolve(captcha)
     })
-  }
+  },
+  // 获取用户更新电影
+  //思路：拿到用户的uid 根据uid查询userlooks表 获取用户看的电影mid以及电影正在更新的状态(state = 0的) 
+  // 再用mid查询movie表  获取movie表中的update  update只有当state = 0 时才有
+  // getUserLook()负责
+  async handlrUserLooks(uid){
+    return new Promise((resolve,reject)=>{
+      pool.getConnection((err,connection)=>{
+        let sql = `select mid,look from userlooks where uid = ${uid} and state = 0`
+        connection.query(sql,(err,result)=>{
+          resolve(result)
+          connection.release();
+        })
+      })
+    })
+  },
+  // 获取用户更新主函数
+  async getUserLook(mid){
+    return new Promise((resolve,reject)=>{
+      pool.getConnection((err,connection)=>{
+        let sql = `select * from movie where id = ${mid}`
+        connection.query(sql,(err,result)=>{
+          let data = []
+          for(i in result){
+            data.push(result[i].update)
+          }
+          resolve(data)
+          connection.release();
+        })
+      })
+    })
+  },
+  // 按电影的ID获取影片详情
+  async getMovieById(id){
+    return new Promise((resolve,reject)=>{
+      pool.getConnection((err,connection)=>{
+        connection.query(sqlMap.movie.queryById,[id],(err,result) => {
+          resolve(result)
+          connection.release();
+        })
+      })
+    })
+  },
+  //更新用户观看情况
+  async updateUserLooks(uid,mid,look){
+    return new Promise((resolve,reject)=>{
+      pool.getConnection((err,connection)=>{
+        let sql = `update userlooks set look = ${look} where uid = ${uid} and mid = ${mid}`
+        connection.query(sql,(err,result) => {
+          resolve(result)
+          connection.release();
+        })
+      })
+    })
+  },
 }

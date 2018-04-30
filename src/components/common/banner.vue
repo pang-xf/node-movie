@@ -4,18 +4,32 @@
       <div class='content'>
         <div class="list">
           <ul>
-            <li><a href="#">美剧</a></li>
-            <li><a href="#">日剧</a></li>
-            <li><a href="#">韩剧</a></li>
-            <li><a href="#">动漫</a></li>
-            <li><a href="#">国产剧</a></li>
-            <li><a href="#">全部</a></li>
+            <li>
+              <router-link to="category/country/美国/1">美剧</router-link>
+            </li>
+            <li>
+              <router-link to="category/country/日本/1">日剧</router-link>
+            </li>
+            <li>
+              <router-link to="category/country/韩国/1">韩剧</router-link>
+            </li>
+            <li>
+              <router-link to="category/type/动漫/1">动漫</router-link>
+            </li>
+            <li>
+              <router-link to="category/country/大陆/1">国产剧</router-link>
+            </li>
+            <li>
+              <router-link to="category/all/全部/1">全部</router-link>
+            </li>
           </ul>
         </div>
         <div class="search">
             <el-input
             placeholder="想找什么呢"
-            suffix-icon="el-icon-search">
+            v-model="search"
+            >
+            <el-button slot="append" icon="el-icon-search" @click="searchData"></el-button>
           </el-input>
         </div>
       </div>
@@ -27,14 +41,26 @@
 export default {
   data(){
     return{
-
+      search:''
     }
   },
   mounted () {  
-    this.init();  
   },  
   methods:{
-    init(){
+    searchData(){
+      if(!this.search){
+        this.$notify.info({
+          title: '提示',
+          message: '您还没输入内容哦',
+        });
+        return
+      }
+      this.$router.push({
+        name:'detail',
+        params:{
+          id:this.search
+        }
+      })
     }
   }
 }
@@ -68,8 +94,8 @@ export default {
     }
   }
   height: 380px;
-  background: url(http://oqlmukw41.bkt.clouddn.com/wallhaven-647063.jpg)no-repeat;
-  background-size: 100% 100%;
+  background: url(http://oo9xy1zeh.bkt.clouddn.com/wallhaven-603157.png)no-repeat 0 -100px;
+  background-size: cover;
   .wrap{
     width:100%;
     height: 380px;

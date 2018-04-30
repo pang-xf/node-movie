@@ -5,7 +5,7 @@ var sqlMap = {
     queryByState: 'SELECT * FROM MOVIE WHERE STATE=?',
     queryAll: 'SELECT * FROM MOVIE',
     queryById:'SELECT * FROM MOVIE WHERE ID=?',
-    queryByTime:'SELECT name,`update`,`time`,`img`,`dingyue` FROM MOVIE order by time desc limit 3', 
+    queryByTime:'SELECT name,`update`,`time`,`img`,`dingyue`,`id` FROM MOVIE order by time desc limit 3', 
     queryByClass:'SELECT * FROM MOVIE WHERE TYPE=?', 
     queryByCountry:'SELECT * FROM MOVIE WHERE COUNTRY=?', 
     queryByEarly:'SELECT * FROM MOVIE WHERE time < 2012', 

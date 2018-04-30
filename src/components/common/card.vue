@@ -16,7 +16,7 @@
     </div>
   </div>
   <div class="moreData" v-show="dataLength>7">
-    <router-link to="#">查看更多</router-link>
+    <router-link to="/category/all/全部/1">查看更多</router-link>
   </div>
 </div>
 </template>
@@ -66,7 +66,6 @@ export default {
         params:{state:this.state}
         }).then(function (response) {
           this.dataLength = response.data.length;
-          console.log(this.dataLength);
           this.data = response.data.slice(0,7); //拿到数据 显示7个  多得显示更多按钮
         }.bind(this))
         .catch(function (error) {
@@ -111,7 +110,7 @@ export default {
 <style lang="less" scoped>
 .card{
   overflow: hidden;
-  width: 23.87%;
+  width: 23%;
   height: 120px;
   float: left;
   margin-right: 10px;
@@ -193,18 +192,20 @@ export default {
 }
 .moreData{
     position: absolute;
-    right: 10px;
+    right: 4.2%;
     bottom: 9px;
-    width: 256px;
+    width: 23%;
     height: 120px;
-    border: 1px solid #ccc;
+    border: 1px dashed #ccc;
     display: flex;
+    background: #fff;
     justify-content: center;
     align-items: center;
     a{
       transition: all .2s;
       letter-spacing: 3px;
-      color:rgb(48, 48, 182);
+      color: #666;
+      font-weight: bold;
       &:hover{
         color:salmon;
       }

@@ -8,21 +8,21 @@
           </el-col>
           <!-- 导航条 -->
           <el-col :span="12">
-            <el-menu mode="horizontal" 
-            text-color="#888" 
-            active-text-color="#5AB7AF" 
-            class="menu" 
+            <el-menu mode="horizontal"
+            text-color="#888"
+            active-text-color="#5AB7AF"
+            class="menu"
             router
             :default-active="$route.path"
             >
               <el-menu-item index="/">首页</el-menu-item>
               <el-menu-item index="/mylist">我的清单</el-menu-item>
-              <el-menu-item index="/category" route="/category/全部">分类</el-menu-item>
+              <el-menu-item index="/category" route="/category/all/全部/1">分类</el-menu-item>
             </el-menu>
           </el-col>
           <!-- 搜索 -->
           <el-col :span="6">
-            <el-input suffix-icon="el-icon-search" placeholder="搜索"></el-input>
+            <el-input suffix-icon="el-icon-search" placeholder="搜索" v-model="search" @keyup.enter.native="submit"></el-input>
           </el-col>
           <!-- 登录框 -->
           <el-col :span="1" v-if="!this.$store.state.login.currentUser.getUserToken()">
@@ -46,12 +46,12 @@
         </el-col>
       </el-row>
       <Login :dialogVisible="show"></Login>
-  </div>    
+  </div>
 </template>
 <script>
 import Login from '@/components/common/login.vue'
 import {mapState,mapActions} from 'vuex';
-export default { 
+export default {
     components:{
       Login
     },
@@ -61,7 +61,8 @@ export default {
         token:null,
         user:'',
         avtar:'',
-        avtarHover:false
+        avtarHover:false,
+        search:''
       };
     },
     mounted(){
@@ -78,6 +79,22 @@ export default {
       ]),
     },
     methods:{
+      submit(){
+        console.log('2222');
+        if(!this.search){
+          this.$notify.info({
+            title: '提示',
+            message: '您还没输入内容哦',
+          });
+          return
+        }
+        this.$router.push({
+          name:'detail',
+          params:{
+            id:this.search
+          }
+        })
+      },
       ...mapActions(['handle']),
       showUserMenu(){
         this.avtarHover = !this.avtarHover
@@ -200,7 +217,7 @@ export default {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        margin: 5px 0; 
+        margin: 5px 0;
         &:hover{
           background: #efefef;
           color: salmon;

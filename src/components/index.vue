@@ -2,9 +2,10 @@
   <div>
     <Header></Header>
     <div class="banner">
-      <Banner></Banner>      
+      <Banner></Banner>
     </div>
     <UserChoose></UserChoose>
+    <update v-show="this.$store.state.login.currentUser.getUserToken()"></update>
     <List title="新剧推荐" state="0"></List>
     <List title="完结剧集" state="1"></List>
     <el-row>
@@ -23,6 +24,7 @@ import UserChoose from '@/components/common/userChoose.vue';
 import List from '@/components/common/list.vue';
 import Footer from '@/components/common/footer.vue';
 import tjqd from '@/components/common/tjqd.vue';
+import update from '@/components/common/update.vue';
 export default {
   data(){
     return{
@@ -35,7 +37,8 @@ export default {
     UserChoose,
     List,
     Footer,
-    tjqd
+    tjqd,
+    update
   },
 }
 </script>

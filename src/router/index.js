@@ -39,20 +39,9 @@ const router =  new Router({
       children: [
         // 当 /user/:id 匹配成功，
         // UserHome 会被渲染在 User 的 <router-view> 中
-        { path: '/category/:id', name:'cardCate',component: cardCate },
-
-        // ...其他子路由
+        { path: '/category/:mainClass/:menu/:curPage', name:'cardCate',component: cardCate },
       ]
     },
-    // {
-    //   path:'/category/menu/:params',
-    //   name:'category',
-    //   component:category,
-    //   meta:{
-    //     // keepAlive:true,
-    //     title:'分类'
-    //   }
-    // },
     {
       path:'/mylist',
       name:'mylist',
@@ -82,7 +71,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {  // 判断该路由是否需要登录权限
     let token = store.state.login.currentUser.getUserToken()
     // console.log(token); //拿到了
-    if (token) { 
+    if (token) {
         next();
     }
     else {

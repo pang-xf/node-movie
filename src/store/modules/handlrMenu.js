@@ -7,13 +7,13 @@ const state = {
 };
 const mutations = {
   SET_CATEGORY(state,payload){
-    state.category=payload;
+    state.category=payload.class;
+    state.mainnClass=payload.mainMenu;
   }
 };
 const actions = {
   setCategory({commit},params){
-    let payload = params.class;
-    console.log(payload);
+    let payload = params;
     commit("SET_CATEGORY",payload)
   }
 };

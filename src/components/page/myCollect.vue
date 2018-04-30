@@ -88,13 +88,11 @@ export default {
         }
       })
       .then(res=>{
-        console.log(res);
         this.data = res.data.data
       })
     },
     cancleSub(tid){
       let uid = localStorage.getItem('id')
-      console.log(tid);
       // 取消收藏
       axios.get('/api/tjqd/cancel',{
         params:{

@@ -5,20 +5,20 @@
       <div class="leftMenu">
           <ul>
             <li>
-              <router-link to="#">
+              <router-link to="/mylist">
                 <div class="icon"></div>
                 <span>我的订阅</span>
               </router-link>
             </li>
             <li>
-              <router-link to="#">
+              <router-link to="/myCollect">
                 <div class="icon"></div>
-                <span>已看完</span>
+                <span>我收藏的清单</span>
               </router-link>
             </li>
           </ul>
       </div>
-      <div class="rightWrap" v-for="(item,index) in film" :key="index">
+      <div class="rightWrap" v-for="(item,index) in film" :key="index" v-show="film.length>0">
         <!-- header -->
         <div class="header">
           <div class="top">
@@ -58,14 +58,17 @@
         <!-- 播放列表 -->
         <PlayList/>
         <!-- 右下角广告 -->
-        <div class="ad">
+        <!-- <div class="ad">
            <el-card>
             <img src="http://neets.cc/assets/img/ervm2.png" alt="">      
           </el-card>
-        </div>
-        <div class="footer">
-          <Footer/>
-        </div>
+        </div> -->
+      </div>
+      <div class="noneData" v-show="film.length == 0">
+        没有该条记录哦
+      </div>
+      <div class="footer">
+        <Footer/>        
       </div>
     </div>
   </div>
@@ -118,7 +121,7 @@ export default {
 }
 .content{
   width: 1000px;
-  height: 1200px;
+  // height: 1200px;
   margin: 0 auto;
   margin-top: 80px;
 }
@@ -143,6 +146,19 @@ export default {
       }
     }
   }
+}
+.noneData{
+  float: right;
+  height: 300px;
+  width: 800px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  border-radius: 8px;
+  font-size: 24px;
+  letter-spacing: 3px;
+  color:#666;
 }
 .rightWrap{
   height: 100%;
@@ -290,6 +306,7 @@ export default {
   }
 }
 .footer{
-  float: left;
+  float: right;
+  margin-top: 30px;
 }
 </style>
